@@ -202,9 +202,9 @@
         }
         
         .floor-map {
-            width: 1000px;
-            height: 800px;
-            background: #e9ecf5;
+            width: 2000px;
+            height: 1850px;
+            
             position: relative;
             transform-origin: center center;
             margin: auto;
@@ -232,16 +232,17 @@
             border-radius: 5px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 5px;
+            padding: 0;
             text-align: center;
-            min-width: 100px;
-            min-height: 60px;
+            width: 140px;
+            height: 140px;
             z-index: 10;
+            overflow: hidden;
         }
         
         .node:hover {
@@ -263,8 +264,24 @@
         .node-name {
             font-weight: bold;
             color: #5b1f1f;
-            font-size: 14px;
+            font-size: 12px;
             line-height: 1.2;
+            padding: 2px 4px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 3px;
+            margin-top: 2px;
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            right: 2px;
+            text-align: center;
+        }
+        
+        .building-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 3px;
         }
         
         .connection {
@@ -723,15 +740,17 @@
             border-radius: 5px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 5px;
+            padding: 0;
             text-align: center;
-            min-width: 80px;
+            width: 100px;
+            height: 100px;
             z-index: 10;
+            overflow: hidden;
         }
         
         .basement-node:hover {
@@ -753,8 +772,17 @@
         .basement-node-name {
             font-weight: bold;
             color: #5b1f1f;
-            font-size: 12px;
+            font-size: 10px;
             line-height: 1.2;
+            padding: 2px 4px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 3px;
+            margin-top: 2px;
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            right: 2px;
+            text-align: center;
         }
         
         .basement-connection {
@@ -1057,69 +1085,101 @@
             "CENTRAL LIBRARY", "GM BAKERY", "CANTEEN", "LADIES HOSTEL", "GENTS HOSTEL", 
             "GMS ACADEMY DEGREE COLLEGE(BCA,BCom)", "GM HALAMMA PU COLLEGE", "ADMIN BLOCK", 
             "PLAYGROUND", "GANESHA TEMPLE", "FLAG AREA", "CAR PARKING AREA",
-            "GUEST HOUSE", "LAWN", "CIRCLE", "BUSTAND AREA"
+            "GUEST HOUSE", "LAWN", "CIRCLE", "BUSTAND AREA",
+            // Main road junctions (helper nodes along the straight road)
+            "J-GANESHA TEMPLE", "J-ADMIN BLOCK", "J-ENGINEERING BLOCK", "J-CANTEEN",
+            "J-LAWN", "J-CAR PARKING AREA", "J-BAKERY", "J-GENTS HOSTEL", "J-LADIES HOSTEL",
+            "J-CENTRAL LIBRARY", "J-GUEST HOUSE", "J-PHARMACY", "J-PU", "J-FLAG"
         ];
         
         // Define connections between nodes (using grid coordinates)
         const edges = [
-            ["MAIN ENTERANCE", "GANESHA TEMPLE"],
-            ["MAIN ENTERANCE", "CANTEEN"],
-            ["ENGINEERING BLOCK", "GANESHA TEMPLE"],
-            ["GANESHA TEMPLE", "ADMIN BLOCK"],
-            ["ENGINEERING BLOCK", "LAWN"],
-            ["ENGINEERING BLOCK", "GENTS HOSTEL"],
-            ["LAWN", "GENTS HOSTEL"],
-            ["GENTS HOSTEL", "CENTRAL LIBRARY"],
-            ["LAWN", "CIRCLE"],
-            ["LAWN", "CANTEEN"],
-            ["LAWN", "CAR PARKING AREA"],
-            ["LAWN", "LADIES HOSTEL"],
-            ["CANTEEN", "CAR PARKING AREA"],
-            ["CAR PARKING AREA", "LADIES HOSTEL"],
-            ["CENTRAL LIBRARY", "GM INSTITUTE OF PHARMACEUTICAL SCIENCES AND RESEARCH"],
-            ["CENTRAL LIBRARY", "CIRCLE"],
-            ["CIRCLE", "GM INSTITUTE OF PHARMACEUTICAL SCIENCES AND RESEARCH"],
-            ["CIRCLE", "GM HALAMMA PU COLLEGE"],
-            ["CIRCLE", "PLAYGROUND"],
-            ["BUSTAND AREA", "GM HALAMMA PU COLLEGE"],
-            ["CIRCLE", "BUSTAND AREA"],
+            // Main straight road as chained junctions from MAIN ENTERANCE (y=1150) to CIRCLE (y=150)
+            ["MAIN ENTERANCE", "J-GANESHA TEMPLE"],
+            ["J-GANESHA TEMPLE", "J-FLAG"],
+            ["J-FLAG", "J-ADMIN BLOCK"],
+            ["J-GANESHA TEMPLE", "J-ADMIN BLOCK"],
+            ["J-ADMIN BLOCK", "J-ENGINEERING BLOCK"],
+            ["J-ENGINEERING BLOCK", "J-CANTEEN"],
+            ["J-CANTEEN", "J-LAWN"],
+            ["J-LAWN", "J-CAR PARKING AREA"],
+            ["J-CAR PARKING AREA", "J-BAKERY"],
+            ["J-BAKERY", "J-GENTS HOSTEL"],
+            ["J-GENTS HOSTEL", "J-LADIES HOSTEL"],
+            ["J-LADIES HOSTEL", "J-CENTRAL LIBRARY"],
+            ["J-CENTRAL LIBRARY", "J-GUEST HOUSE"],
+            ["J-GUEST HOUSE", "J-PHARMACY"],
+            ["J-PHARMACY", "CIRCLE"],
+            ["CIRCLE", "J-PU"],
+            ["ENGINEERING BLOCK","ADMIN BLOCK"],
+            ["ENGINEERING BLOCK","GANESHA TEMPLE"],
             ["GANESHA TEMPLE","FLAG AREA"],
-            ["GANESHA TEMPLE", "MAIN ENTERANCE"],
-            ["LAWN", "MAIN ENTERANCE"],
-            ["BUSTAND AREA", "PLAYGROUND"],
-            ["LADIES HOSTEL", "GUEST HOUSE"],
-            ["LADIES HOSTEL", "CIRCLE"],
-            ["PLAYGROUND", "GUEST HOUSE"],
-            ["CANTEEN", "GANESHA TEMPLE"],
-            ["GM BAKERY", "CENTRAL LIBRARY"],
+            ["ENGINEERING BLOCK","LAWN"],
+            ["LAWN","GM BAKERY"],
+            ["PLAYGROUND","GUEST HOUSE"],
+            ["LADIES HOSTEL","CAR PARKING AREA"],
+            // Spokes from buildings to their nearest junction on the main road
+            ["GANESHA TEMPLE", "J-GANESHA TEMPLE"],
+            ["FLAG AREA", "J-FLAG"],
+            ["ADMIN BLOCK", "J-ADMIN BLOCK"],
+            ["ENGINEERING BLOCK", "J-ENGINEERING BLOCK"],
+            ["CANTEEN", "J-CANTEEN"],
+            ["LAWN", "J-LAWN"],
+            ["CAR PARKING AREA", "J-CAR PARKING AREA"],
+            ["GM BAKERY", "J-BAKERY"],
+            ["GENTS HOSTEL", "J-GENTS HOSTEL"],
+            ["LADIES HOSTEL", "J-LADIES HOSTEL"],
+            ["CENTRAL LIBRARY", "J-CENTRAL LIBRARY"],
+            ["GUEST HOUSE", "J-GUEST HOUSE"],
+            ["GM INSTITUTE OF PHARMACEUTICAL SCIENCES AND RESEARCH", "J-PHARMACY"],
+            ["GM HALAMMA PU COLLEGE", "J-PU"],
+            // Locations below the circle branch from the circle point
+            ["PLAYGROUND", "CIRCLE"],
+            ["BUSTAND AREA", "CIRCLE"]
         ];
-        
+    
         // Node positions on a grid (x, y coordinates)
         const nodePositions = {
-            "MAIN ENTERANCE": { x: 600, y: 1050 },
-            "ENGINEERING BLOCK": { x: 100, y: 700 },
-            "GM INSTITUTE OF PHARMACEUTICAL SCIENCES AND RESEARCH": { x: 15, y: 200 },
-            "CENTRAL LIBRARY": { x: 200, y: 300 },
-            "GM BAKERY": { x: 50, y: 400 },
-            "CANTEEN": { x: 900, y: 800 },
+            "MAIN ENTERANCE": { x: 650, y: 1150 },
+            "ENGINEERING BLOCK": { x: 300, y: 700 },
+            "GM INSTITUTE OF PHARMACEUTICAL SCIENCES AND RESEARCH": { x: 250, y: 200 },
+            "CENTRAL LIBRARY": { x: 500, y: 250 },
+            "GM BAKERY": { x: 400, y: 400 },
+            "CANTEEN": { x: 900, y: 650 },
             "LADIES HOSTEL": { x: 900, y: 350 },
             "GENTS HOSTEL": { x: 100, y: 500 },
-            "GM HALAMMA PU COLLEGE": { x: 200, y: 100 },
-            "ADMIN BLOCK": { x: 50, y: 900 },
-            "PLAYGROUND": { x: 900, y: 100 },
+            "GM HALAMMA PU COLLEGE": { x: 400, y: -10 },
+            "ADMIN BLOCK": { x: 50, y: 800 },
+            "PLAYGROUND": { x: 900, y: -20 },
             "GANESHA TEMPLE": { x: 200, y: 900 },
             "FLAG AREA": { x: 200, y: 1100 },
             "CAR PARKING AREA": { x: 900, y: 500 },
-            "GUEST HOUSE": { x: 900, y: 200 },
-            "LAWN": { x: 500, y: 600 },
-            "CIRCLE": { x: 450, y: 250 },
-            "BUSTAND AREA": { x: 900, y: 1 }
+            "GUEST HOUSE": { x: 900, y: 150 },
+            "LAWN": { x: 500, y: 550 },
+            "CIRCLE": { x: 650, y: 50 },
+            "BUSTAND AREA": { x: 900, y: -200 }
+        ,
+            // Junction positions projected on the main road (x=650) at each building's y
+            "J-GANESHA TEMPLE": { x: 650, y: 900 },
+            "J-FLAG": { x: 650, y: 1030 },
+            "J-ADMIN BLOCK": { x: 650, y: 800 },
+            "J-ENGINEERING BLOCK": { x: 650, y: 700 },
+            "J-CANTEEN": { x: 650, y: 650 },
+            "J-LAWN": { x: 650, y: 550 },
+            "J-CAR PARKING AREA": { x: 650, y: 500 },
+            "J-BAKERY": { x: 650, y: 400 },
+            "J-GENTS HOSTEL": { x: 650, y: 500 },
+            "J-LADIES HOSTEL": { x: 650, y: 350 },
+            "J-CENTRAL LIBRARY": { x: 650, y: 250 },
+            "J-GUEST HOUSE": { x: 650, y: 200 },
+            "J-PHARMACY": { x: 650, y: 200 },
+            "J-PU": { x: 650, y: 100 }
         };
         
         // Building images - YOU CAN REPLACE THESE WITH YOUR OWN FILE NAMES
         const buildingImages = {
             "ENGINEERING BLOCK": "eng.jpg",
-            "CENTRAL LIBRARY": "lib.jpg",
+            "CENTRAL LIBRARY": "LIB.jpg",
             "CANTEEN": "cafeteria.jpg",
             "LADIES HOSTEL": "girls hostel.jpg",
             "GENTS HOSTEL": "GENTS HOSTEL.jpg",
@@ -1131,9 +1191,9 @@
             "GMS ACADEMY DEGREE COLLEGE(BCA,BCom)": "pu.jpg",
             "MAIN ENTERANCE": "gmu_Entrance.jpg",
             "GANESHA TEMPLE": "ganesha.jpg",
-            "GM BAKERY": "bakery.jpg",
+            "GM BAKERY": "BAKERY.jpg",
             "CAR PARKING AREA": "car.jpg",
-            "BUSTAND AREA": "bus_stand.jpg",
+            "BUSTAND AREA": "BUS.jpg",
             "LAWN": "LAWN.jpg",
             "CIRCLE": "circle.jpg",
             "FLAG AREA": "flag.jpg"
@@ -1737,6 +1797,9 @@
         let speechSynthesis = window.speechSynthesis;
         let isSpeaking = false;
         
+        // Helper: identify artificial junction nodes used along the main road
+        const isJunction = (name) => typeof name === 'string' && name.startsWith('J-');
+        
         // Basement floor variables
         let basementCurrentPath = [];
         let basementCurrentPosition = null;
@@ -1755,6 +1818,17 @@
         let engGuidanceInterval = null;
         let engStep = 0;
         
+        // Define building-to-building shortcuts (for weighted routing)
+        const buildingShortcuts = new Set([
+            "ENGINEERING BLOCK|ADMIN BLOCK","ADMIN BLOCK|ENGINEERING BLOCK",
+            "ENGINEERING BLOCK|GANESHA TEMPLE","GANESHA TEMPLE|ENGINEERING BLOCK",
+            "GANESHA TEMPLE|FLAG AREA","FLAG AREA|GANESHA TEMPLE",
+            "ENGINEERING BLOCK|LAWN","LAWN|ENGINEERING BLOCK",
+            "LAWN|GM BAKERY","GM BAKERY|LAWN",
+            "PLAYGROUND|GUEST HOUSE","GUEST HOUSE|PLAYGROUND",
+            "LADIES HOSTEL|CAR PARKING AREA","CAR PARKING AREA|LADIES HOSTEL"
+        ]);
+
         // Create a graph from edges for pathfinding
         function createGraph() {
             const graph = {};
@@ -1778,44 +1852,41 @@
             return graph;
         }
         
-        // Find shortest path using BFS
+        // Weighted shortest path (Dijkstra). Prefers main-road junctions/spokes over building-to-building shortcuts
+        function getEdgeWeight(a, b, destination) {
+            const isShortcut = buildingShortcuts.has(`${a}|${b}`);
+            if (!isShortcut) return 1; // junction chain and building-to-junction spokes
+            // If the shortcut leads directly to the destination (either direction), keep it cheap
+            if (b === destination || a === destination) return 1;
+            return 3; // otherwise discourage using building-to-building as transit
+        }
+
         function findShortestPath(graph, start, end) {
             if (start === end) return [start];
+            const dist = {}; const prev = {}; const visited = new Set();
+            nodes.forEach(n => { dist[n] = Infinity; prev[n] = null; });
+            dist[start] = 0;
             
-            const queue = [start];
-            const visited = {[start]: true};
-            const predecessors = {};
-            let found = false;
-            
-            while (queue.length > 0 && !found) {
-                const current = queue.shift();
-                
-                if (graph[current]) {
-                    graph[current].forEach(neighbor => {
-                        if (!visited[neighbor]) {
-                            visited[neighbor] = true;
-                            predecessors[neighbor] = current;
-                            queue.push(neighbor);
-                            
-                            if (neighbor === end) {
-                                found = true;
-                            }
-                        }
-                    });
+            while (visited.size < nodes.length) {
+                // pick unvisited node with smallest dist
+                let u = null; let best = Infinity;
+                for (const n of nodes) {
+                    if (!visited.has(n) && dist[n] < best) { best = dist[n]; u = n; }
                 }
+                if (u === null) break; // unreachable nodes left
+                if (u === end) break;
+                visited.add(u);
+                const neighbors = graph[u] || [];
+                neighbors.forEach(v => {
+                    if (visited.has(v)) return;
+                    const w = getEdgeWeight(u, v, end);
+                    const alt = dist[u] + w;
+                    if (alt < dist[v]) { dist[v] = alt; prev[v] = u; }
+                });
             }
-            
-            // Reconstruct path
-            if (!found) return null;
-            
-            const path = [end];
-            let current = end;
-            
-            while (current !== start) {
-                current = predecessors[current];
-                path.unshift(current);
-            }
-            
+            if (dist[end] === Infinity) return null;
+            const path = []; let cur = end;
+            while (cur) { path.unshift(cur); cur = prev[cur]; }
             return path;
         }
         
@@ -1936,8 +2007,9 @@
             const words = transcript.toUpperCase().split(/\s+/);
             const foundLocations = [];
             
-            // Check for each node name in the transcript
+            // Check for each node name in the transcript (exclude junctions)
             nodes.forEach(node => {
+                if (isJunction(node)) return;
                 const nodeName = node.toUpperCase();
                 if (transcript.toUpperCase().includes(nodeName)) {
                     foundLocations.push(node);
@@ -1947,6 +2019,7 @@
             // Also check for partial matches
             if (foundLocations.length < 2) {
                 nodes.forEach(node => {
+                    if (isJunction(node)) return;
                     const nodeNameParts = node.toUpperCase().split(/[\/\-\s]+/);
                     for (const part of nodeNameParts) {
                         if (part.length > 2 && words.includes(part) && !foundLocations.includes(node)) {
@@ -2095,10 +2168,10 @@
                 }
             });
             
-            // Draw nodes
+            // Draw nodes (hide junction helper nodes)
             nodes.forEach(node => {
                 const position = nodePositions[node];
-                if (position) {
+                if (position && !isJunction(node)) {
                     const nodeEl = document.createElement('div');
                     nodeEl.className = 'node';
                     
@@ -2118,7 +2191,7 @@
                         nodeEl.classList.add('node-with-image');
                         
                         const imageEl = document.createElement('img');
-                        imageEl.className = 'node-image';
+                        imageEl.className = 'building-image';
                         imageEl.src = buildingImages[node];
                         imageEl.alt = node;
                         
@@ -2953,6 +3026,7 @@
             const toSelect = document.getElementById('to');
             
             nodes.forEach(node => {
+                if (isJunction(node)) return; // exclude junctions from dropdowns
                 // Add to dropdowns
                 const option = document.createElement('option');
                 option.value = node;
@@ -3004,5 +3078,5 @@
             });
         };
     </script>
-</body>
+</body>SS
 </html>
